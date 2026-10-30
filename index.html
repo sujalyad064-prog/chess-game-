@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grandmaster Chess Arena • Professional & Multi-Level</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body class="intro-active theme-wood">
+
+<!-- ARENA INTRO SCREEN -->
+<div class="fire-intro" id="fire-intro" aria-hidden="true">
+    <div class="fire-glow"></div>
+    <div class="fire-flames">
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+        <span class="fire-flame"></span>
+    </div>
+    <div class="fire-title">
+        <span class="fire-icon">♞</span>
+        <p>THE ARENA AWAKENS</p>
+        <small>GRANDMASTER CHESS ARENA • V2.0</small>
+        <button id="skip-intro-btn" class="skip-btn" title="Skip Intro">⚡ Start Game</button>
+    </div>
+</div>
+
+<div class="app">
+
+    <!-- TOP HEADER NAVBAR -->
+    <header>
+        <div class="logo">
+            <span class="logo-icon">♞</span>
+            <div>
+                <h1>GRANDMASTER</h1>
+                <p>CHESS ARENA PRO</p>
+            </div>
+        </div>
+
+        <!-- MODE SELECTOR PILLS -->
+        <nav class="mode-nav">
+            <button class="mode-pill active" data-mode="ai">
+                <span class="pill-icon">🤖</span> vs Computer
+            </button>
+            <button class="mode-pill" data-mode="pass">
+                <span class="pill-icon">👥</span> Pass &amp; Play
+            </button>
+            <button class="mode-pill" data-mode="puzzle">
+                <span class="pill-icon">🧩</span> Puzzles
+            </button>
+            <button class="mode-pill" data-mode="analysis">
+                <span class="pill-icon">🔍</span> Analysis
+            </button>
+        </nav>
+
+        <!-- TOP BAR ACTIONS -->
+        <div class="header-right">
+            <!-- THEME SELECTOR -->
+            <div class="theme-select-wrap">
+                <span class="ctrl-icon">🎨</span>
+                <select id="theme-selector" class="theme-dropdown" aria-label="Board Theme">
+                    <option value="theme-wood">Wood Master</option>
+                    <option value="theme-emerald">Emerald Classic</option>
+                    <option value="theme-cyber">Cyberpunk Neon</option>
+                    <option value="theme-midnight">Midnight Glass</option>
+                </select>
+            </div>
+
+            <!-- SOUND TOGGLE -->
+            <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound" aria-label="Toggle Sound">
+                <span id="sound-icon">🔊</span>
+            </button>
+
+            <!-- FULLSCREEN TOGGLE -->
+            <button id="fullscreen-btn" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+                <span>⛶</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN GAME LAYOUT -->
+    <main>
+
+        <!-- LEFT SECTION: CHESS ARENA -->
+        <section class="game-section">
+
+            <div class="game-headline">
+                <div class="title-meta">
+                    <p class="small-title">TACTICAL BATTLEGROUND</p>
+                    <h2 id="headline-title">Grandmaster <span>Arena.</span></h2>
+                </div>
+                <div class="header-badges">
+                    <span class="badge" id="mode-badge">🤖 VS COMPUTER (ADVANCED)</span>
+                    <span class="badge opening-badge" id="opening-badge">A00 Standard</span>
+                </div>
+            </div>
+
+            <!-- OPPONENT PLAYER BAR (BLACK) -->
+            <div class="player-bar top-player" id="top-player-bar">
+                <div class="player-left">
+                    <div class="avatar black-avatar" id="top-avatar">♚</div>
+                    <div class="player-details">
+                        <div class="name-row">
+                            <h3 id="top-player-name">Deep Master AI</h3>
+                            <span class="elo-tag" id="top-player-elo">1900 ELO</span>
+                        </div>
+                        <div class="captured-tray" id="top-captured"></div>
+                    </div>
+                </div>
+
+                <div class="player-right">
+                    <div class="material-diff" id="top-material"></div>
+                    <div class="clock-display" id="top-clock">--:--</div>
+                    <div class="player-status" id="black-status">WAITING</div>
+                </div>
+            </div>
+
+            <!-- CHESSBOARD & EVALUATION BAR WRAPPER -->
+            <div class="board-stage">
+
+                <!-- REAL-TIME ADVANTAGE EVALUATION BAR -->
+                <div class="eval-bar-wrapper" title="Real-time Engine Position Evaluation">
+                    <div class="eval-bar-inner">
+                        <div class="eval-bar-black"></div>
+                        <div class="eval-bar-white" id="eval-bar-fill"></div>
+                    </div>
+                    <span class="eval-score" id="eval-score-text">0.0</span>
+                </div>
+
+                <!-- BOARD WRAPPER -->
+                <div class="board-wrapper">
+                    <div class="coordinates-left" id="rank-labels"></div>
+                    <div class="board" id="chessboard"></div>
+                    <div class="coordinates-bottom" id="file-labels"></div>
+
+                    <!-- SVG OVERLAY FOR HINT ARROWS -->
+                    <svg class="board-svg-overlay" id="board-arrows" aria-hidden="true"></svg>
+
+                    <!-- PAWN PROMOTION POPUP MODAL -->
+                    <div class="promotion-modal hidden" id="promotion-modal">
+                        <div class="promotion-card">
+                            <p>PROMOTE PAWN</p>
+                            <div class="promotion-choices" id="promotion-choices">
+                                <!-- Options injected via JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GAME OVER OVERLAY -->
+                    <div class="game-over-overlay hidden" id="game-over-overlay">
+                        <div class="game-over-card">
+                            <div class="trophy-icon" id="game-over-icon">🏆</div>
+                            <h2 id="game-over-title">CHECKMATE!</h2>
+                            <p id="game-over-subtitle">White won by checkmate</p>
+                            <div class="game-over-actions">
+                                <button id="modal-rematch-btn" class="primary-btn">↻ Play Again</button>
+                                <button id="modal-review-btn" class="control-btn">🔍 Analyze Board</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- USER PLAYER BAR (WHITE) -->
+            <div class="player-bar bottom-player" id="bottom-player-bar">
+                <div class="player-left">
+                    <div class="avatar white-avatar" id="bottom-avatar">♔</div>
+                    <div class="player-details">
+                        <div class="name-row">
+                            <h3 id="bottom-player-name">You</h3>
+                            <span class="elo-tag" id="bottom-player-elo">YOU</span>
+                        </div>
+                        <div class="captured-tray" id="bottom-captured"></div>
+                    </div>
+                </div>
+
+                <div class="player-right">
+                    <div class="material-diff" id="bottom-material"></div>
+                    <div class="clock-display" id="bottom-clock">--:--</div>
+                    <div class="player-status active" id="white-status">YOUR TURN</div>
+                </div>
+            </div>
+
+            <!-- BOARD QUICK CONTROLS -->
+            <div class="controls">
+                <button id="new-game-btn" class="primary-btn" title="Start a fresh match">
+                    ↻ New Game
+                </button>
+                <button id="undo-btn" class="control-btn" title="Take back move">
+                    ↶ Undo
+                </button>
+                <button id="hint-btn" class="control-btn hint-btn" title="Get Tactical Hint & Best Move">
+                    💡 Hint
+                </button>
+                <button id="flip-btn" class="control-btn" title="Flip board perspective">
+                    ⇅ Flip
+                </button>
+                <button id="resign-btn" class="control-btn danger-btn" title="Resign game">
+                    🏳 Resign
+                </button>
+            </div>
+
+        </section>
+
+        <!-- RIGHT SIDEBAR: TABS & CONTROLS -->
+        <aside class="sidebar">
+
+            <!-- SIDEBAR TAB SWITCHER -->
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" data-tab="status-tab">Status</button>
+                <button class="tab-btn" data-tab="moves-tab">Moves</button>
+                <button class="tab-btn" data-tab="settings-tab">Settings</button>
+                <button class="tab-btn" data-tab="puzzles-tab">Puzzles</button>
+                <button class="tab-btn" data-tab="tools-tab">PGN/FEN</button>
+            </div>
+
+            <!-- TAB 1: STATUS & OPENINGS & EVAL -->
+            <div class="tab-content active" id="status-tab">
+
+                <!-- STATUS CARD -->
+                <div class="sidebar-card status-card">
+                    <p class="card-label">MATCH STATUS</p>
+                    <h2 id="game-status">White's Turn</h2>
+                    <div class="status-line">
+                        <span class="status-indicator" id="status-indicator"></span>
+                        <span id="status-description">Make your move</span>
+                    </div>
+                </div>
+
+                <!-- OPENING BOOK EXPLORER -->
+                <div class="sidebar-card opening-card">
+                    <div class="card-heading">
+                        <p class="card-label">OPENING BOOK</p>
+                        <span class="eco-tag" id="sidebar-eco">A00</span>
+                    </div>
+                    <h3 id="sidebar-opening-name">Standard Chess Opening</h3>
+                    <p class="opening-sub" id="opening-desc">Identify opening theory in real-time as moves unfold.</p>
+                </div>
+
+                <!-- TACTICAL ADVISOR / HINT CARD -->
+                <div class="sidebar-card hint-card" id="hint-card">
+                    <div class="card-heading">
+                        <p class="card-label">TACTICAL ADVISOR</p>
+                        <span class="hint-badge">AI INSIGHT</span>
+                    </div>
+                    <div id="hint-content">
+                        <p class="hint-empty">Click 💡 Hint anytime to uncover the engine's best move recommendation &amp; positional reasoning.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 2: MOVE HISTORY & NAVIGATION -->
+            <div class="tab-content" id="moves-tab">
+
+                <div class="sidebar-card moves-card">
+                    <div class="card-heading">
+                        <h3>Notation History</h3>
+                        <span class="live-pill">LIVE SAN</span>
+                    </div>
+
+                    <div class="move-list" id="move-list">
+                        <p class="empty-moves">No moves made yet...</p>
+                    </div>
+
+                    <!-- MOVE STEPPER BUTTONS -->
+                    <div class="history-controls">
+                        <button id="nav-start" class="nav-btn" title="Beginning of Game">|◀</button>
+                        <button id="nav-prev" class="nav-btn" title="Previous Move">◀</button>
+                        <button id="nav-next" class="nav-btn" title="Next Move">▶</button>
+                        <button id="nav-end" class="nav-btn" title="Current Position">▶|</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 3: GAME SETTINGS & AI DIFFICULTY -->
+            <div class="tab-content" id="settings-tab">
+
+                <div class="sidebar-card settings-card">
+                    <h3>Game Configuration</h3>
+
+                    <!-- AI DIFFICULTY (BASIC TO ADVANCE) -->
+                    <div class="setting-group">
+                        <label>AI Difficulty Level</label>
+                        <div class="difficulty-grid">
+                            <button class="diff-btn" data-level="1">
+                                <span class="diff-title">Novice</span>
+                                <span class="diff-elo">800 ELO</span>
+                            </button>
+                            <button class="diff-btn" data-level="2">
+                                <span class="diff-title">Intermediate</span>
+                                <span class="diff-elo">1400 ELO</span>
+                            </button>
+                            <button class="diff-btn active" data-level="3">
+                                <span class="diff-title">Advanced</span>
+                                <span class="diff-elo">1900 ELO</span>
+                            </button>
+                            <button class="diff-btn" data-level="4">
+                                <span class="diff-title">Grandmaster</span>
+                                <span class="diff-elo">2400+ ELO</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PLAY AS -->
+                    <div class="setting-group">
+                        <label>Play As</label>
+                        <div class="color-select-grid">
+                            <button class="color-btn active" data-color="w">♔ White</button>
+                            <button class="color-btn" data-color="random">🎲 Random</button>
+                            <button class="color-btn" data-color="b">♚ Black</button>
+                        </div>
+                    </div>
+
+                    <!-- TIME CONTROL CLOCK -->
+                    <div class="setting-group">
+                        <label>Time Control</label>
+                        <select id="time-control-select" class="styled-select">
+                            <option value="0">Casual (Untimed)</option>
+                            <option value="60">1 Min (Bullet)</option>
+                            <option value="180">3 Min (Blitz)</option>
+                            <option value="600" selected>10 Min (Rapid)</option>
+                            <option value="1800">30 Min (Classical)</option>
+                        </select>
+                    </div>
+
+                    <button id="apply-settings-btn" class="primary-btn full-btn">Apply &amp; Restart Match</button>
+                </div>
+
+            </div>
+
+            <!-- TAB 4: PUZZLES & TACTICS TRAINER -->
+            <div class="tab-content" id="puzzles-tab">
+
+                <div class="sidebar-card puzzles-card">
+                    <div class="card-heading">
+                        <h3>Tactics Trainer</h3>
+                        <span class="puzzle-score" id="puzzle-score">Solved: 0</span>
+                    </div>
+
+                    <!-- LEVEL FILTER -->
+                    <div class="puzzle-filter">
+                        <button class="p-filter-btn active" data-pfilter="All">All</button>
+                        <button class="p-filter-btn" data-pfilter="Basic">Basic</button>
+                        <button class="p-filter-btn" data-pfilter="Intermediate">Intermediate</button>
+                        <button class="p-filter-btn" data-pfilter="Advance">Advance</button>
+                    </div>
+
+                    <div class="puzzle-box" id="puzzle-box">
+                        <div class="puzzle-meta">
+                            <span class="badge" id="puzzle-theme">Mate in 1</span>
+                            <span class="elo-tag" id="puzzle-rating">850 ELO</span>
+                        </div>
+                        <h4 id="puzzle-title">Scholar's Kiss</h4>
+                        <p id="puzzle-prompt" class="puzzle-prompt">White to move: Deliver instantaneous Checkmate!</p>
+                        <div id="puzzle-feedback" class="puzzle-feedback"></div>
+                    </div>
+
+                    <div class="puzzle-actions">
+                        <button id="puzzle-hint-btn" class="control-btn">💡 Hint</button>
+                        <button id="puzzle-reset-btn" class="control-btn">↻ Reset</button>
+                        <button id="puzzle-next-btn" class="primary-btn">Next Puzzle ➔</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 5: PGN / FEN TOOLS -->
+            <div class="tab-content" id="tools-tab">
+
+                <div class="sidebar-card tools-card">
+                    <h3>PGN &amp; FEN Utilities</h3>
+
+                    <div class="tool-section">
+                        <label>Current FEN Position</label>
+                        <div class="input-with-btn">
+                            <input type="text" id="fen-input" readonly>
+                            <button id="copy-fen-btn" class="control-btn" title="Copy FEN">📋 Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="tool-section">
+                        <label>Load Position (Paste FEN)</label>
+                        <div class="input-with-btn">
+                            <input type="text" id="load-fen-input" placeholder="Paste FEN string here...">
+                            <button id="load-fen-btn" class="primary-btn">Load</button>
+                        </div>
+                    </div>
+
+                    <div class="tool-section">
+                        <label>PGN Game Record</label>
+                        <textarea id="pgn-textarea" readonly rows="5"></textarea>
+                        <div class="tool-buttons">
+                            <button id="copy-pgn-btn" class="control-btn">📋 Copy PGN</button>
+                            <button id="download-pgn-btn" class="control-btn">💾 Download .pgn</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER MOTTO -->
+            <div class="footer-note">
+                <span>♛</span>
+                THINK. PLAN. CONQUER.
+            </div>
+
+        </aside>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        GRANDMASTER CHESS ARENA PRO • BUILT FOR CHESS ENTHUSIASTS FROM BASIC TO GRANDMASTER
+    </footer>
+
+</div>
+
+<!-- APPLICATION JAVASCRIPT MODULE -->
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
